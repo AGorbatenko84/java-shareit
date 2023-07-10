@@ -4,6 +4,7 @@ package ru.practicum.shareit.user;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exception.ConflictException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -27,7 +28,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto addNewUser(@Valid UserDto userDto) {
+    public UserDto addNewUser( UserDto userDto) {
         validationUser(userDto);
         User user = UserMapper.toUser(userDto);
         userRepository.save(user);
@@ -86,7 +87,7 @@ public class UserServiceImpl implements UserService {
         List<User> list = userRepository.findAll();
         for (User u : list) {
             if (email.equalsIgnoreCase(u.getEmail()))
-                throw new ValidationException("Пользователь с такой почтой уже существует");
+                throw new ConflictException("Пользователь с такой почтой уже существует.");
         }
     }
 }

@@ -75,7 +75,7 @@ public class UserRepositoryImpl implements UserRepository {
     private boolean isEmailUsed(Long userId, String email) {
         return repository.values()
                 .stream()
-                .filter(user -> user.getId() != userId)
+                .filter(user -> !user.getId().equals(userId))
                 .anyMatch(user -> user.getEmail().equalsIgnoreCase(email));
     }
 

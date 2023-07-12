@@ -30,7 +30,7 @@ public class ItemRepositoryImpl implements ItemRepository {
     public List<Item> findByUserId(Long userId) {
         return repository.values()
                 .stream()
-                .filter(item -> userId == item.getUserId())
+                .filter(item -> userId.equals(item.getUserId()))
                 .collect(Collectors.toList());
     }
 

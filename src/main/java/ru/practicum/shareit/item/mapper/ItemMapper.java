@@ -9,9 +9,10 @@ public class ItemMapper {
         ItemDto itemDto = new ItemDto();
         itemDto.setName(item.getName());
         itemDto.setDescription(item.getDescription());
-        itemDto.setAvailable(item.isAvailable());
+        itemDto.setAvailable(item.getAvailable().booleanValue());
         itemDto.setId(item.getId());
-        if ( item.getRequest() != null) {
+        itemDto.setUserId(item.getUserId());
+        if (item.getRequest() != null) {
             itemDto.setRequest(item.getRequest());
         }
 
@@ -22,9 +23,9 @@ public class ItemMapper {
         Item item = new Item();
         item.setName(itemDto.getName());
         item.setDescription(itemDto.getDescription());
-        item.setAvailable(itemDto.isAvailable());
+        item.setAvailable(itemDto.getAvailable().booleanValue());
         item.setId(itemDto.getId());
-
+        item.setUserId(itemDto.getUserId());
         return item;
     }
 

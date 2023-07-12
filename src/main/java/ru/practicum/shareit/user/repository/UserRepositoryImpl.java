@@ -2,6 +2,7 @@ package ru.practicum.shareit.user.repository;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import ru.practicum.shareit.exception.ConflictException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.user.model.User;
 
@@ -46,7 +47,7 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public User update(Long userId, User user) {
         if (isEmailUsed(userId, user.getEmail())) {
-            throw new ValidationException("Такая почта уже используется");
+            throw new ConflictException("Такая почта уже используется");
         }
         repository.put(userId, user);
         return repository.get(userId);

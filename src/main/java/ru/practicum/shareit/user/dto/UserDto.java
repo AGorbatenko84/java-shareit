@@ -3,6 +3,7 @@ package ru.practicum.shareit.user.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import ru.practicum.shareit.exception.ValidationException;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -17,8 +18,8 @@ import javax.validation.constraints.Pattern;
 public class UserDto {
     private Long id;
 
-    @Email(message = "Это не почта")
-    @NotBlank(message = "Почта не может быть пустой")
+    @Email
+    //@NotBlank(message = "Почта не может быть пустой")
     private String email;
 
     @NotBlank(message = "Логин не может быть пустым")

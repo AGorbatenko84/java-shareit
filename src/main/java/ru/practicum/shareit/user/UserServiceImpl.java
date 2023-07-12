@@ -28,7 +28,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto addNewUser( UserDto userDto) {
+    public UserDto addNewUser(@Valid UserDto userDto) {
         validationUser(userDto);
         User user = UserMapper.toUser(userDto);
         userRepository.save(user);
@@ -73,7 +73,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUserById(Long userId) {
-        ;
         userRepository.deleteUserById(userId);
     }
 

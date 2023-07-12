@@ -29,7 +29,7 @@ public class Item {
     private Long userId;
 
     @NotBlank
-    private boolean isAvailable;
+    private Boolean available;
 
     private ItemRequest request;
 

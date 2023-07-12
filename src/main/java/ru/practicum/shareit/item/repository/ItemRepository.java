@@ -13,5 +13,9 @@ public interface ItemRepository {
 
     Item save(Long userId, Item item);
 
+    Item update(Item item);
+
+    Item getItemById(Long itemId);
+
     void deleteByItemId(Long itemId);
 }

@@ -14,9 +14,9 @@ interface ItemService {
 
     void deleteItem(Long userId, Long itemId);
 
-    ItemDto patchItem(Long userId, ItemDto item);
+    ItemDto patchItem(Long userId, ItemDto item, Long itemId);
 
-    List<ItemDto> getAvailableItems(String text);
+    List<ItemDto> getAvailableItems(Long userId, String text);
 
     ItemDto getById(Long itemId);
 }

@@ -1,22 +1,21 @@
 package ru.practicum.shareit.item;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.repository.UserRepository;
 
-import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Slf4j
-public class ItemServiceImpl implements ItemService{
+public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
 
@@ -36,25 +35,42 @@ public class ItemServiceImpl implements ItemService{
 
 
     @Override
-    public ItemDto addNewItem(Long userId, @Valid ItemDto itemDto){
+    public ItemDto addNewItem(Long userId, ItemDto itemDto) {
         if (!userRepository.isUserContains(userId)) {
             throw new NotFoundException("Пользователя с таким Id не существует");
-
         }
+        validationItem(itemDto);
+        Item item = ItemMapper.toItem(itemDto);
+        itemRepository.save(userId, item);
+        userRepository.getUserById(userId).addIdItem(item.getId());
 
-            Item item = ItemMapper.toItem(itemDto);
-            userRepository.getUserById(userId).addIdItem(item.getId());
-
-            itemRepository.save(userId, item);
-            itemDto.setId(item.getId());
+        itemDto.setId(item.getId());
 
         return itemDto;
     }
 
     @Override
-    public ItemDto patchItem(Long userId, ItemDto itemDto) {
-        Item item = ItemMapper.toItem(itemDto);
-        itemRepository.getAllItems().put(item.getId(),item);
+    public ItemDto patchItem(Long userId, ItemDto itemDto, Long itemId) {
+        itemDto.setId(itemId);
+        if (!isUserContainsThisItem(userId, itemDto)) {
+            throw new NotFoundException("У пользователя с таким Id нет такого предмета");
+        }
+        Item item = itemRepository.getItemById(itemId);
+        if (itemDto.getName() == null) {
+            itemDto.setName(item.getName());
+        }
+        if (itemDto.getDescription() == null) {
+            itemDto.setDescription(item.getDescription());
+        }
+
+        if (itemDto.getAvailable() == null) {
+            itemDto.setAvailable(item.getAvailable());
+        }
+        itemDto.setUserId(userId);
+
+        item = ItemMapper.toItem(itemDto);
+        itemRepository.update(item);
+
         return itemDto;
     }
 
@@ -64,14 +80,42 @@ public class ItemServiceImpl implements ItemService{
     }
 
     @Override
-    public List<ItemDto> getAvailableItems(String text) {
-        return null;
+    public List<ItemDto> getAvailableItems(Long userId, String text) {
+        if (text == null || text.isBlank()) return new ArrayList<>();
+        List<ItemDto> listItems = itemRepository.getAllItems().values()
+                .stream()
+                .filter(item -> item.getDescription().toLowerCase().contains(text.toLowerCase()) ||
+                        item.getName().toLowerCase().contains(text.toLowerCase()))
+                .filter(item -> item.getAvailable().booleanValue())
+                .map(item -> ItemMapper.toItemDto(item))
+                .collect(Collectors.toList());
+        return listItems;
     }
 
     @Override
     public void deleteItem(Long userId, Long itemId) {
         itemRepository.deleteByItemId(itemId);
         userRepository.deleteItemById(userId, itemId);
+    }
+
+    private void validationItem(ItemDto itemDto) {
+        if (itemDto.getAvailable() == null || !itemDto.getAvailable().booleanValue()) {
+            throw new ValidationException("При создании предмет должен быть доступен.");
+        }
+
+        if (itemDto.getName() == null || itemDto.getName().isBlank()) {
+            throw new ValidationException("При создании предмет должен иметь название.");
+        }
+
+        if (itemDto.getDescription() == null || itemDto.getDescription().isBlank()) {
+            throw new ValidationException("При создании предмет должен иметь описание.");
+        }
+    }
+
+    private boolean isUserContainsThisItem(Long userId, ItemDto itemDto) {
+        return userRepository.getUserById(userId)
+                .getItemsId()
+                .contains(itemDto.getId());
     }
 
 }

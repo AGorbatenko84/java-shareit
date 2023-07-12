@@ -23,8 +23,8 @@ public class ItemDto {
     @NotBlank(message = "Описание не может быть пустым")
     private String description;
 
-    @NotBlank
-    private boolean isAvailable;
+    @NotBlank(message = "Статус должен быть")
+    private Boolean available;
     @NotBlank(message = "Предметом точно кто-то владеет")
     private Long userId;
 

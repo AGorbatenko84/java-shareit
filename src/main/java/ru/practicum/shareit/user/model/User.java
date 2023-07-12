@@ -29,7 +29,7 @@ public class User {
 
     private Set<Long> itemsId = new HashSet<>();
 
-    public void addIdItem(Long itemId){
+    public void addIdItem(Long itemId) {
         itemsId.add(itemId);
     }
 

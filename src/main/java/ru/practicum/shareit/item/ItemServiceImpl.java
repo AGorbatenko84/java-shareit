@@ -8,6 +8,7 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.ArrayList;
@@ -36,17 +37,16 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto addNewItem(Long userId, ItemDto itemDto) {
-        if (!userRepository.isUserContains(userId)) {
-            throw new NotFoundException("Пользователя с таким Id не существует");
-        }
+        User userLoaded = userRepository.getUserById(userId)
+                .orElseThrow(() -> new NotFoundException("Пользователя с таким Id не существует"));
+
         validationItem(itemDto);
         Item item = ItemMapper.toItem(itemDto);
         itemRepository.save(userId, item);
-        userRepository.getUserById(userId).addIdItem(item.getId());
 
-        itemDto.setId(item.getId());
+        userLoaded.addIdItem(item.getId());
 
-        return itemDto;
+        return ItemMapper.toItemDto(item);
     }
 
     @Override
@@ -114,6 +114,7 @@ public class ItemServiceImpl implements ItemService {
 
     private boolean isUserContainsThisItem(Long userId, ItemDto itemDto) {
         return userRepository.getUserById(userId)
+                .get()
                 .getItemsId()
                 .contains(itemDto.getId());
     }

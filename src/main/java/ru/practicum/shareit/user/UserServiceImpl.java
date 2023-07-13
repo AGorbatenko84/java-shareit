@@ -38,29 +38,25 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto patchUser(Long userId, UserDto userDto) {
-        if (userRepository.listIdsUsers().contains(userId)) {
-            User user = userRepository.getUserById(userId);
-            if (userDto.getName() == null) {
-                userDto.setName(user.getName());
-            }
-            if (userDto.getEmail() == null) {
-                userDto.setEmail(user.getEmail());
-            }
-            user = UserMapper.toUser(userDto);
-            user.setId(userId);
-            userDto.setId(userId);
-            userRepository.update(userId, user);
-        } else throw new NotFoundException("Такого пользователя не существует");
+        User user = userRepository.getUserById(userId)
+                .orElseThrow(() -> new NotFoundException("Такого пользователя не существует"));
+        if (userDto.getName() == null) {
+            userDto.setName(user.getName());
+        }
+        if (userDto.getEmail() == null) {
+            userDto.setEmail(user.getEmail());
+        }
+        user = UserMapper.toUser(userDto);
+        user.setId(userId);
+        userDto.setId(userId);
+        userRepository.update(userId, user);
         return userDto;
     }
 
     @Override
     public UserDto getUserById(Long userId) {
-        UserDto userDto = new UserDto();
-        if (userRepository.listIdsUsers().contains(userId)) {
-            userDto = UserMapper.toUserDto(userRepository.getUserById(userId));
-        } else throw new NotFoundException("Такого пользователя не существует");
-        return userDto;
+        return UserMapper.toUserDto(userRepository.getUserById(userId)
+                .orElseThrow(() -> new NotFoundException("Такого пользователя не существует")));
     }
 
     @Override

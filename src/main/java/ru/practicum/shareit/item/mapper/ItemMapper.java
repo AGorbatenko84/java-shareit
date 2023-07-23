@@ -11,11 +11,10 @@ public class ItemMapper {
         itemDto.setDescription(item.getDescription());
         itemDto.setAvailable(item.getAvailable().booleanValue());
         itemDto.setId(item.getId());
-        itemDto.setUserId(item.getUserId());
-        if (item.getRequest() != null) {
-            itemDto.setRequest(item.getRequest());
-        }
 
+       /* if (item.getRequest() != null) {
+            itemDto.setRequest(item.getRequest());
+        }*/
         return itemDto;
     }
 
@@ -25,7 +24,6 @@ public class ItemMapper {
         item.setDescription(itemDto.getDescription());
         item.setAvailable(itemDto.getAvailable().booleanValue());
         item.setId(itemDto.getId());
-        item.setUserId(itemDto.getUserId());
         return item;
     }
 

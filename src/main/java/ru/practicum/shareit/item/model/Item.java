@@ -3,34 +3,38 @@ package ru.practicum.shareit.item.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.validator.constraints.Length;
-import ru.practicum.shareit.request.ItemRequest;
+import lombok.ToString;
+import ru.practicum.shareit.user.model.User;
 
-import javax.validation.constraints.NotBlank;
+import javax.persistence.*;
 
 /**
  * TODO Sprint add-controllers.
  */
 
+@Entity
+@Table(name = "items", schema = "public")
 @Data
 @RequiredArgsConstructor
 @AllArgsConstructor
 public class Item {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Length(max = 50, message = "Максимальная длина описания — 50 символов")
-    @NotBlank(message = "Название не может быть пустым")
+    @Column(name = "name", nullable = false)
     private String name;
-    @Length(max = 200, message = "Максимальная длина описания — 200 символов")
-    @NotBlank(message = "Описание не может быть пустым")
+
+    @Column(name = "description", nullable = false)
     private String description;
 
-    @NotBlank(message = "Предметом точно кто-то владеет")
-    private Long userId;
-
-    @NotBlank
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    @ToString.Exclude
+    private User user;
+    @Column(name = "available", nullable = false)
     private Boolean available;
 
-    private ItemRequest request;
+    //private ItemRequest request;
 
 }

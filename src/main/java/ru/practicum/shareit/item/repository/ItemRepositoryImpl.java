@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item.repository;
+/*package ru.practicum.shareit.item.repository;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -60,3 +60,4 @@ public class ItemRepositoryImpl implements ItemRepository {
 
     }
 }
+*/

@@ -1,10 +1,9 @@
-package ru.practicum.shareit.user;
+package ru.practicum.shareit.user.service;
 
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.ConflictException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -12,7 +11,6 @@ import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
-import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,7 +26,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto addNewUser(@Valid UserDto userDto) {
+    public UserDto addNewUser(UserDto userDto) {
         validationUser(userDto);
         User user = UserMapper.toUser(userDto);
         userRepository.save(user);
@@ -38,7 +36,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto patchUser(Long userId, UserDto userDto) {
-        User user = userRepository.getUserById(userId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Такого пользователя не существует"));
         if (userDto.getName() == null) {
             userDto.setName(user.getName());
@@ -49,13 +47,13 @@ public class UserServiceImpl implements UserService {
         user = UserMapper.toUser(userDto);
         user.setId(userId);
         userDto.setId(userId);
-        userRepository.update(userId, user);
+        userRepository.save(user);
         return userDto;
     }
 
     @Override
     public UserDto getUserById(Long userId) {
-        return UserMapper.toUserDto(userRepository.getUserById(userId)
+        return UserMapper.toUserDto(userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Такого пользователя не существует")));
     }
 
@@ -69,7 +67,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUserById(Long userId) {
-        userRepository.deleteUserById(userId);
+        userRepository.deleteById(userId);
     }
 
     private void validationUser(UserDto userDto) {
@@ -80,9 +78,5 @@ public class UserServiceImpl implements UserService {
         if (email == null || email.isBlank())
             throw new ValidationException("Почта не может быть пуста");
         List<User> list = userRepository.findAll();
-        for (User u : list) {
-            if (email.equalsIgnoreCase(u.getEmail()))
-                throw new ConflictException("Пользователь с такой почтой уже существует.");
-        }
     }
 }

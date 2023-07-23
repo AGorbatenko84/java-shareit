@@ -18,7 +18,6 @@ public class UserDto {
     private Long id;
 
     @Email
-    //@NotBlank(message = "Почта не может быть пустой")
     private String email;
 
     @NotBlank(message = "Логин не может быть пустым")

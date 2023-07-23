@@ -1,4 +1,4 @@
-package ru.practicum.shareit.user.repository;
+/*package ru.practicum.shareit.user.repository;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -70,3 +70,4 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
 }
+*/

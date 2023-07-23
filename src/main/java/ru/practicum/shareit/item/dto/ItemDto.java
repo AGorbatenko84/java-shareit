@@ -4,9 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.Length;
-import ru.practicum.shareit.request.ItemRequest;
+import ru.practicum.shareit.booking.dto.BookingDto;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 /**
  * TODO Sprint add-controllers.
@@ -23,11 +24,11 @@ public class ItemDto {
     @NotBlank(message = "Описание не может быть пустым")
     private String description;
 
-    @NotBlank(message = "Статус должен быть")
+    @NotNull(message = "Статус должен быть")
     private Boolean available;
-    @NotBlank(message = "Предметом точно кто-то владеет")
-    private Long userId;
 
-    private ItemRequest request;
+    //private BookingDto lastBooking;
+
+    //private BookingDto nextBooking;
 
 }

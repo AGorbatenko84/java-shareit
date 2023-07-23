@@ -20,6 +20,12 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleStatusException(final StatusException e) {
+        return Map.of("error", "Unknown state: UNSUPPORTED_STATUS");
+    }
+
+    @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleNotFound(final NotFoundException e) {
         return Map.of("error", "Объект не найден.");

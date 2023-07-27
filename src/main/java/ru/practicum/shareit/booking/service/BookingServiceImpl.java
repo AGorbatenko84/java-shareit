@@ -41,7 +41,7 @@ public class BookingServiceImpl implements BookingService {
         booking.setItem(item);
         booking.setStatus(StatusBooking.WAITING);
         booking.setOwner(item.getUser());
-        if (item.getUser().getId() != userId) {
+        if (!item.getUser().getId().equals(userId)) {
             booking.setBooker(userRepository.getById(userId));
         }
         bookingRepository.save(booking);
@@ -50,11 +50,13 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDto patchBooking(Long userId, Long bookingId, String status) {
-        Optional<Booking> optionalBooking = bookingRepository.findById(bookingId);
-        if (optionalBooking.get().getOwner().getId() != userId || optionalBooking.isEmpty()) {
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> {
+            throw new NotFoundException("Такой брони не существует");
+        });
+
+        if (!userId.equals(booking.getOwner().getId())) {
             throw new NotFoundException("Не возможно изменить статус");
         }
-        Booking booking = optionalBooking.get();
         if (status.equalsIgnoreCase("true")) {
             if (booking.getStatus().equals(StatusBooking.APPROVED)) {
                 throw new ValidationException("Статус уже подтвержден");
@@ -73,16 +75,17 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDto getByIdAndUserId(Long userId, Long bookingId) {
-        Optional<User> optionalUser = userRepository.findById(userId);
-        Optional<Booking> optionalBooking = bookingRepository.findById(bookingId);
-        if (optionalUser.isEmpty() || optionalBooking.isEmpty()) {
-            throw new NotFoundException("Такой id отсутствует");
-        }
-        if (!optionalBooking.get().getOwner().getId().equals(userId)
-                && !optionalBooking.get().getBooker().getId().equals(userId)) {
+        User user = userRepository.findById(userId).orElseThrow(() -> {
+            throw new NotFoundException("Такой пользователь отсутствует");
+        });
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> {
+            throw new NotFoundException("Такой брони не существует");
+        });
+        if (!userId.equals(booking.getOwner().getId())
+                && !userId.equals(booking.getBooker().getId())) {
             throw new NotFoundException("Запрос может делать или владелец или автор брони");
         }
-        return bookingMapper.toBookingDto(optionalBooking.get());
+        return bookingMapper.toBookingDto(booking);
     }
 
     @Override

@@ -7,6 +7,7 @@ import ru.practicum.shareit.item.dto.ItemDtoReqCreate;
 import ru.practicum.shareit.item.dto.ItemDtoReqPatch;
 import ru.practicum.shareit.item.model.Item;
 
+import javax.validation.constraints.Pattern;
 import java.util.List;
 
 @Mapper(uses = {BookingMapper.class, CommentMapper.class})

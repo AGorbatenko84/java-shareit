@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import ru.practicum.shareit.booking.dto.BookingInItemDto;
 
+import javax.validation.constraints.Pattern;
 import java.util.List;
 
 @Data
@@ -12,6 +13,7 @@ import java.util.List;
 @Builder
 public class ItemDto {
     private Long id;
+    @Pattern(regexp = "^[a-z]([a-zA-Z0-9]*)?$")
     private String name;
     private String description;
     private Boolean available;

@@ -1,28 +1,30 @@
 package ru.practicum.shareit.booking.mapper;
 
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingDtoReqCreate;
+import ru.practicum.shareit.booking.dto.BookingInItemDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.user.mapper.UserMapper;
 
-public class BookingMapper {
+import java.util.List;
 
-    public static BookingDto toBookingDto(Booking booking){
-        BookingDto bookingDto = new BookingDto();
-        bookingDto.setId(booking.getId());
-        bookingDto.setStart(booking.getStart());
-        bookingDto.setEnd(booking.getEnd());
-        bookingDto.setStatus(booking.getStatus());
-        bookingDto.setBooker(UserMapper.toUserDto(booking.getBooker()));
-        bookingDto.setItem(ItemMapper.toItemDto(booking.getItem()));
-        return bookingDto;
-    }
+@Mapper(uses = {ItemMapper.class, UserMapper.class})
+public interface BookingMapper {
 
-    public static Booking toBooking(BookingDto bookingDto){
-        Booking booking = new Booking();
-        booking.setId(bookingDto.getId());
-        booking.setStart(bookingDto.getStart());
-        booking.setEnd(bookingDto.getEnd());
-        return booking;
-    }
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "booker", ignore = true)
+    @Mapping(target = "item", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    Booking toBooking(BookingDtoReqCreate dto);
+
+    BookingDto toBookingDto(Booking booking);
+
+    List<BookingDto> toBookingDtoList(List<Booking> bookingList);
+
+    @Mapping(target = "bookerId", source = "booking.booker.id")
+    BookingInItemDto toBookingInItemDto(Booking booking);
+
 }

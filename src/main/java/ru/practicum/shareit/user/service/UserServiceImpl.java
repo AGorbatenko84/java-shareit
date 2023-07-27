@@ -1,8 +1,8 @@
 package ru.practicum.shareit.user.service;
 
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
@@ -12,23 +12,19 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-
+    private final UserMapper userMapper;
     private final UserRepository userRepository;
 
-    @Autowired
-    public UserServiceImpl(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     @Override
     public UserDto addNewUser(UserDto userDto) {
         validationUser(userDto);
-        User user = UserMapper.toUser(userDto);
+        User user = userMapper.toUser(userDto);
         userRepository.save(user);
         userDto.setId(user.getId());
         return userDto;
@@ -44,7 +40,7 @@ public class UserServiceImpl implements UserService {
         if (userDto.getEmail() == null) {
             userDto.setEmail(user.getEmail());
         }
-        user = UserMapper.toUser(userDto);
+        user = userMapper.toUser(userDto);
         user.setId(userId);
         userDto.setId(userId);
         userRepository.save(user);
@@ -53,16 +49,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getUserById(Long userId) {
-        return UserMapper.toUserDto(userRepository.findById(userId)
+        return userMapper.toUserDto(userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Такого пользователя не существует")));
     }
 
     @Override
     public List<UserDto> getAllUsers() {
-        return userRepository.findAll()
-                .stream()
-                .map(user -> UserMapper.toUserDto(user))
-                .collect(Collectors.toUnmodifiableList());
+        List<User> list = userRepository.findAll();
+        return userMapper.toUserDtoList(list);
     }
 
     @Override

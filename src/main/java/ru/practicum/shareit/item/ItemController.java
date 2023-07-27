@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemDtoReqCreate;
+import ru.practicum.shareit.item.dto.ItemDtoReqPatch;
 import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
@@ -24,19 +26,19 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDto> get(@RequestHeader("X-Sharer-User-Id") Long userId) {
-        return itemService.getItems(userId);
+    public List<ItemDto> getByOwner(@RequestHeader("X-Sharer-User-Id") Long userId) {
+        return itemService.getItemsByOwner(userId);
     }
 
     @PostMapping
     public ItemDto add(@RequestHeader("X-Sharer-User-Id") Long userId,
-                      @Valid @RequestBody ItemDto itemDto) {
+                       @Valid @RequestBody ItemDtoReqCreate itemDto) {
         return itemService.addNewItem(userId, itemDto);
     }
 
     @PatchMapping("/{itemId}")
     public ItemDto patchItem(@RequestHeader("X-Sharer-User-Id") Long userId,
-                             @RequestBody ItemDto itemDto, @PathVariable Long itemId) {
+                             @RequestBody ItemDtoReqPatch itemDto, @PathVariable Long itemId) {
         return itemService.patchItem(userId, itemDto, itemId);
     }
 
@@ -49,7 +51,7 @@ public class ItemController {
     @GetMapping("/search")
     public List<ItemDto> getByDescription(@RequestHeader("X-Sharer-User-Id") Long userId,
                                           @RequestParam String text) {
-        return itemService.getAvailableItems(userId, text);
+        return itemService.searchItemsByText(userId, text);
     }
 
 
@@ -61,7 +63,7 @@ public class ItemController {
 
     @PostMapping("/{itemId}/comment")
     public CommentDto addComment(@RequestHeader("X-Sharer-User-Id") Long userId,
-                          @Valid @RequestBody CommentDto commentDto,
+                                 @Valid @RequestBody CommentDto commentDto,
                                  @PathVariable Long itemId) {
         return itemService.addNewComment(userId, commentDto, itemId);
     }

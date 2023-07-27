@@ -4,9 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import org.hibernate.Hibernate;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 /**
  * TODO Sprint add-controllers.
@@ -35,6 +37,16 @@ public class Item {
     @Column(name = "available", nullable = false)
     private Boolean available;
 
-    //private ItemRequest request;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Item item = (Item) o;
+        return id != null && Objects.equals(id, item.id);
+    }
 
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

@@ -3,6 +3,7 @@ package ru.practicum.shareit.booking;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingDtoReqCreate;
 import ru.practicum.shareit.booking.service.BookingService;
 
 import javax.validation.Valid;
@@ -15,6 +16,7 @@ import java.util.List;
 @RequestMapping(path = "/bookings")
 public class BookingController {
     private final BookingService bookingService;
+
     @Autowired
     public BookingController(BookingService bookingService) {
         this.bookingService = bookingService;
@@ -22,7 +24,7 @@ public class BookingController {
 
     @PostMapping
     public BookingDto add(@RequestHeader("X-Sharer-User-Id") Long userId,
-                          @Valid @RequestBody BookingDto bookingDto) {
+                          @Valid @RequestBody BookingDtoReqCreate bookingDto) {
         return bookingService.addNewBooking(userId, bookingDto);
     }
 
@@ -35,7 +37,7 @@ public class BookingController {
 
     @GetMapping("/{bookingId}")
     public BookingDto getById(@RequestHeader("X-Sharer-User-Id") Long userId,
-                           @PathVariable Long bookingId) {
+                              @PathVariable Long bookingId) {
         return bookingService.getByIdAndUserId(userId, bookingId);
     }
 
@@ -47,7 +49,7 @@ public class BookingController {
 
     @GetMapping("/owner")
     public List<BookingDto> getBookingsOwner(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                        @RequestParam(defaultValue = "ALL") String state) {
+                                             @RequestParam(defaultValue = "ALL") String state) {
         return bookingService.getListBookingsOwner(userId, state);
     }
 }

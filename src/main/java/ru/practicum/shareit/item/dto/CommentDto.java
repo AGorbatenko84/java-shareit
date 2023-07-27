@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
+import java.time.LocalDateTime;
 
 @Data
 @RequiredArgsConstructor
@@ -16,5 +17,7 @@ public class CommentDto {
     @Length(max = 200, message = "Максимальная длина комментария — 200 символов")
     @NotBlank(message = "Комментарий не может быть пустым")
     private String text;
-    private Long itemId;
+    private String authorName;
+
+    private LocalDateTime created;
 }

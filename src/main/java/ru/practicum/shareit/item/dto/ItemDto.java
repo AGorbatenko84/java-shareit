@@ -12,6 +12,7 @@ import java.util.List;
 @Builder
 public class ItemDto {
     private Long id;
+    @Pattern(regexp = "^[a-z]([a-zA-Z0-9]*)?$")
     private String name;
     private String description;
     private Boolean available;

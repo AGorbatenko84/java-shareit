@@ -7,7 +7,6 @@ import ru.practicum.shareit.item.dto.ItemDtoReqCreate;
 import ru.practicum.shareit.item.dto.ItemDtoReqPatch;
 import ru.practicum.shareit.item.model.Item;
 
-import javax.validation.constraints.Pattern;
 import java.util.List;
 
 @Mapper(uses = {BookingMapper.class, CommentMapper.class})
@@ -22,7 +21,7 @@ public interface ItemMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "user", ignore = true)
-    Item toItem(ItemDtoReqCreate ItemDto);
+    Item toItem(ItemDtoReqCreate itemDto);
 
     @Mapping(target = "user", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

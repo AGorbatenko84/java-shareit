@@ -34,7 +34,9 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDto addNewBooking(Long userId, BookingDtoReqCreate bookingDto) {
-        validateUserId(userId);
+        User user = userRepository.findById(userId).orElseThrow(() -> {
+            throw new NotFoundException("Пользователь с таким id отсутствует");
+        });
         Booking booking = bookingMapper.toBooking(bookingDto);
         validateDate(bookingDto);
         Item item = validateItem(userId, bookingDto.getItemId());
@@ -75,7 +77,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDto getByIdAndUserId(Long userId, Long bookingId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> {
+        userRepository.findById(userId).orElseThrow(() -> {
             throw new NotFoundException("Такой пользователь отсутствует");
         });
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> {
@@ -218,20 +220,10 @@ public class BookingServiceImpl implements BookingService {
         return bookingDtoList;
     }
 
-    private void validateUserId(Long userId) {
-        Optional<User> optionalUser = userRepository.findById(userId);
-        if (optionalUser.isEmpty()) {
-            throw new NotFoundException("Пользователь с таким id отсутствует");
-        }
-    }
-
     private Item validateItem(Long userId, Long itemId) {
-
-        Optional<Item> optionalItem = itemRepository.findById(itemId);
-        if (optionalItem.isEmpty()) {
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> {
             throw new NotFoundException("Предмет с таким id отсутствует");
-        }
-        Item item = optionalItem.get();
+        });
         if (!item.getAvailable()) {
             throw new ValidationException("Эта вещь сейчас не доступна");
         }

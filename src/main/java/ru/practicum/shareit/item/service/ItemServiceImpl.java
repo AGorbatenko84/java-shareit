@@ -51,16 +51,17 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemDto> getItemsByOwner(Long userId) {
         List<Item> items = itemRepository.findAllByUserIdOrderByIdAsc(userId);
+        LocalDateTime timeNow = LocalDateTime.now();
         Map<Long, List<Comment>> comments = commentRepository.findByItemIn(items, SORT_BY_CREATED_DESC)
                 .stream()
                 .collect(groupingBy(comment -> comment.getItem().getId(), toList()));
 
         Map<Long, List<Booking>> lastBookingsMap = bookingRepository.findByItemInAndStartLessThanEqual(
-                        items, LocalDateTime.now(), SORT_BY_START_DESC)
+                        items, timeNow, SORT_BY_START_DESC)
                 .stream()
                 .collect(groupingBy(booking -> booking.getItem().getId(), toList()));
         Map<Long, List<Booking>> nextBookingsMap = bookingRepository.findByItemInAndStartAfter(
-                        items, LocalDateTime.now(), SORT_BY_START_ASC)
+                        items, timeNow, SORT_BY_START_ASC)
                 .stream()
                 .collect(groupingBy(booking -> booking.getItem().getId(), toList()));
         List<ItemDto> itemDtoList = itemMapper.toItemDtoList(items);
@@ -131,12 +132,12 @@ public class ItemServiceImpl implements ItemService {
             throw new NotFoundException("Такого пользователя не существует");
         });
         ItemDto itemDto = itemMapper.toItemDto(item);
-
+        LocalDateTime timeNow = LocalDateTime.now();
         if (item.getUser().getId().equals(userId)) {
             Booking lastBooking = bookingRepository
-                    .findFirstByItemIdAndStartLessThanEqual(itemId, LocalDateTime.now(), SORT_BY_START_DESC);
+                    .findFirstByItemIdAndStartLessThanEqual(itemId, timeNow, SORT_BY_START_DESC);
             Booking nextBooking = bookingRepository
-                    .findFirstByItemIdAndStartAfter(itemId, LocalDateTime.now(), SORT_BY_START_ASC);
+                    .findFirstByItemIdAndStartAfter(itemId, timeNow, SORT_BY_START_ASC);
             itemDto.setLastBooking(bookingMapper.toBookingInItemDto(lastBooking));
             if (nextBooking != null && nextBooking.getStatus().equals(StatusBooking.APPROVED)) {
                 itemDto.setNextBooking(bookingMapper.toBookingInItemDto(nextBooking));

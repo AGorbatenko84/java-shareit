@@ -1,32 +1,29 @@
 package ru.practicum.shareit.item.mapper;
 
+import org.mapstruct.*;
+import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemDtoReqCreate;
+import ru.practicum.shareit.item.dto.ItemDtoReqPatch;
 import ru.practicum.shareit.item.model.Item;
 
-public class ItemMapper {
+import java.util.List;
 
-    public static ItemDto toItemDto(Item item) {
-        ItemDto itemDto = new ItemDto();
-        itemDto.setName(item.getName());
-        itemDto.setDescription(item.getDescription());
-        itemDto.setAvailable(item.getAvailable().booleanValue());
-        itemDto.setId(item.getId());
-        itemDto.setUserId(item.getUserId());
-        if (item.getRequest() != null) {
-            itemDto.setRequest(item.getRequest());
-        }
+@Mapper(uses = {BookingMapper.class, CommentMapper.class})
+public interface ItemMapper {
 
-        return itemDto;
-    }
+    @Mapping(target = "lastBooking", ignore = true)
+    @Mapping(target = "nextBooking", ignore = true)
+    @Mapping(target = "comments", ignore = true)
+    ItemDto toItemDto(Item item);
 
-    public static Item toItem(ItemDto itemDto) {
-        Item item = new Item();
-        item.setName(itemDto.getName());
-        item.setDescription(itemDto.getDescription());
-        item.setAvailable(itemDto.getAvailable().booleanValue());
-        item.setId(itemDto.getId());
-        item.setUserId(itemDto.getUserId());
-        return item;
-    }
+    List<ItemDto> toItemDtoList(List<Item> items);
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "user", ignore = true)
+    Item toItem(ItemDtoReqCreate itemDto);
+
+    @Mapping(target = "user", ignore = true)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateItem(ItemDtoReqPatch itemDto, @MappingTarget Item item);
 }

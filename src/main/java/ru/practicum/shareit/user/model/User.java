@@ -3,34 +3,40 @@ package ru.practicum.shareit.user.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.Hibernate;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
-import java.util.HashSet;
-import java.util.Set;
+import javax.persistence.*;
+import java.util.Objects;
 
 /**
  * TODO Sprint add-controllers.
  */
+@Entity
+@Table(name = "users", schema = "public")
 @Data
 @RequiredArgsConstructor
 @AllArgsConstructor
 public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Email(message = "Это не почта")
-    @NotBlank(message = "Почта не может быть пустой")
+    @Column(name = "email", nullable = false)
     private String email;
 
-    @NotBlank(message = "Логин не может быть пустым")
-    @Pattern(regexp = "\\S+", message = "В логине не могут быть пробелы.")
+    @Column(name = "name", nullable = false)
     private String name;
 
-    private Set<Long> itemsId = new HashSet<>();
-
-    public void addIdItem(Long itemId) {
-        itemsId.add(itemId);
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        User user = (User) o;
+        return id != null && Objects.equals(id, user.id);
     }
 
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

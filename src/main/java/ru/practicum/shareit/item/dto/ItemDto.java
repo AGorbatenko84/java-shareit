@@ -1,33 +1,22 @@
 package ru.practicum.shareit.item.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
-import org.hibernate.validator.constraints.Length;
-import ru.practicum.shareit.request.ItemRequest;
+import ru.practicum.shareit.booking.dto.BookingInItemDto;
 
-import javax.validation.constraints.NotBlank;
+import java.util.List;
 
-/**
- * TODO Sprint add-controllers.
- */
 @Data
-@RequiredArgsConstructor
 @AllArgsConstructor
+@Builder
 public class ItemDto {
     private Long id;
-    @Length(max = 50, message = "Максимальная длина описания — 50 символов")
-    @NotBlank(message = "Название не может быть пустым")
     private String name;
-    @Length(max = 200, message = "Максимальная длина описания — 200 символов")
-    @NotBlank(message = "Описание не может быть пустым")
     private String description;
-
-    @NotBlank(message = "Статус должен быть")
     private Boolean available;
-    @NotBlank(message = "Предметом точно кто-то владеет")
-    private Long userId;
-
-    private ItemRequest request;
+    private BookingInItemDto lastBooking;
+    private BookingInItemDto nextBooking;
+    private List<CommentDto> comments;
 
 }

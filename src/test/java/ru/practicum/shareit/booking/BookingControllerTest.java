@@ -29,7 +29,7 @@ class BookingControllerTest {
     @Autowired
     private ObjectMapper objectMapper ;
     @MockBean
-    private BookingService bookingService;
+    private BookingService bookingService ;
 
     @SneakyThrows
     @Test

@@ -179,9 +179,6 @@
                     <version>0.8.8</version>
                     <configuration>
                         <output>file</output>
-                        <excludes>
-                            <exclude>**/*MapperImpl.*</exclude>
-                        </excludes>
                     </configuration>
                     <executions>
                         <execution>
@@ -196,9 +193,6 @@
                                 <goal>check</goal>
                             </goals>
                             <configuration>
-                                <excludes>
-                                    <exclude>**/*MapperImpl.*</exclude>
-                                </excludes>
                                 <rules>
                                     <rule>
                                         <element>BUNDLE</element>

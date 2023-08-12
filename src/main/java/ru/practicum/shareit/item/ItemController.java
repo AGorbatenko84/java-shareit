@@ -1,6 +1,8 @@
 package ru.practicum.shareit.item;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -14,6 +16,7 @@ import java.util.List;
 /**
  * TODO Sprint add-controllers.
  */
+@Validated
 @RestController
 @RequestMapping(path = "/items")
 public class ItemController {
@@ -31,6 +34,7 @@ public class ItemController {
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public ItemDto add(@RequestHeader("X-Sharer-User-Id") Long userId,
                        @Valid @RequestBody ItemDtoReqCreate itemDto) {
         return itemService.addNewItem(userId, itemDto);

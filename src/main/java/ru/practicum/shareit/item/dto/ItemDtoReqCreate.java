@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.Length;
@@ -12,6 +13,7 @@ import javax.validation.constraints.NotNull;
  * TODO Sprint add-controllers.
  */
 @Data
+@Builder
 @RequiredArgsConstructor
 @AllArgsConstructor
 public class ItemDtoReqCreate {
@@ -23,4 +25,6 @@ public class ItemDtoReqCreate {
     private String description;
     @NotNull(message = "Статус должен быть")
     private Boolean available;
+
+    private Long requestId;
 }

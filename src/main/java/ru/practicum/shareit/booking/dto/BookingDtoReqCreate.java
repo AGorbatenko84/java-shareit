@@ -5,14 +5,16 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
 import javax.validation.constraints.Future;
+import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Data
 @RequiredArgsConstructor
 @AllArgsConstructor
+
 public class BookingDtoReqCreate {
-    @Future(message = "Дата брони не может быть в прошлом")
+    @FutureOrPresent(message = "Дата брони не может быть в прошлом")
     @NotNull
     private LocalDateTime start;
 

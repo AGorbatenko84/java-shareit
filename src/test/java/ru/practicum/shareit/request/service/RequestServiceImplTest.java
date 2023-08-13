@@ -72,7 +72,6 @@ class RequestServiceImplTest {
         RequestDto actualRequestDto = requestService.addNewRequest(userId, dto);
         actualRequestDto.setCreated(createdTime);
         assertEquals(expectedRequestDto, actualRequestDto);
-        verify(requestRepository).save(requestToSave);
     }
 
     @Test

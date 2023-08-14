@@ -94,7 +94,7 @@ public class RequestServiceImpl implements RequestService {
         return requestDto;
     }
 
-    private User validateUserId(Long userId){
+    private User validateUserId(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> {
             throw new NotFoundException("Пользователь с таким id отсутствует");
         });

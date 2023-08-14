@@ -46,10 +46,25 @@ class UserControllerTest {
 
     @SneakyThrows
     @Test
-    void create_whenUserIsNotValid_thenReturnedBadRequest() {
+    void create_whenUserNameIsNotValid_thenReturnedBadRequest() {
         UserDto dto = new UserDto();
         dto.setName(null);
         dto.setEmail("jdoe@mail.com");
+        when(userService.addNewUser(dto)).thenReturn(dto);
+
+        mockMvc.perform(post("/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isBadRequest());
+        verify(userService, never()).addNewUser(dto);
+    }
+
+    @SneakyThrows
+    @Test
+    void create_whenUserEmailIsNotValid_thenReturnedBadRequest() {
+        UserDto dto = new UserDto();
+        dto.setName("John");
+        dto.setEmail("jdoeMail.com");
         when(userService.addNewUser(dto)).thenReturn(dto);
 
         mockMvc.perform(post("/users")
@@ -105,7 +120,6 @@ class UserControllerTest {
     @Test
     void deleteById_whenUserFound_thenStatusIsOk() {
         long userId = 1L;
-        //ResponseEntity<Object> response = ResponseEntity.status(200).build();
         when(userService.deleteUserById(userId)).thenReturn(getTestUserDto());
 
         mockMvc.perform(delete("/users/{id}", userId))

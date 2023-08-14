@@ -39,9 +39,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public RequestDto addNewRequest(Long userId, RequestDtoCreate requestDtoCreate) {
-        User requester = userRepository.findById(userId).orElseThrow(() -> {
-            throw new NotFoundException("Пользователь с таким id отсутствует");
-        });
+        User requester = validateUserId(userId);
         Request request = requestMapper.toRequest(requestDtoCreate);
         request.setRequester(requester);
         request.setCreated(LocalDateTime.now());
@@ -54,9 +52,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public List<RequestDto> getRequests(Long userId) {
-        User requester = userRepository.findById(userId).orElseThrow(() -> {
-            throw new NotFoundException("Пользователь с таким id отсутствует");
-        });
+        User requester = validateUserId(userId);
         List<Request> listRequests = requestRepository.findByRequesterIdOrderByCreatedDesc(userId);
         List<RequestDto> requestDtoList = requestMapper.toRequestDtoList(listRequests);
         setItemsToRequestDto(listRequests, requestDtoList);
@@ -76,9 +72,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public List<RequestDto> getAllRequests(Long userId, Integer from, Integer size) {
-        User requester = userRepository.findById(userId).orElseThrow(() -> {
-            throw new NotFoundException("Пользователь с таким id отсутствует");
-        });
+        User requester = validateUserId(userId);
         PageRequest pageRequest = PageRequest.of((from / size), size, Sort.by("created").descending());
         Page<Request> page = requestRepository.findByRequesterIdIsNot(userId, pageRequest);
         List<Request> requests = page.getContent();
@@ -90,9 +84,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public RequestDto getRequestById(Long userId, Long requestId) {
-        User requester = userRepository.findById(userId).orElseThrow(() -> {
-            throw new NotFoundException("Пользователь с таким id отсутствует");
-        });
+        User requester = validateUserId(userId);
         Request request = requestRepository.findById(requestId).orElseThrow(() -> {
             throw new NotFoundException("Запрос с таким id отсутствует");
         });
@@ -100,5 +92,12 @@ public class RequestServiceImpl implements RequestService {
         List<Item> items = itemRepository.findAllByRequestId(requestId);
         requestDto.setItems(itemMapper.toItemDtoList(items));
         return requestDto;
+    }
+
+    private User validateUserId(Long userId){
+        User user = userRepository.findById(userId).orElseThrow(() -> {
+            throw new NotFoundException("Пользователь с таким id отсутствует");
+        });
+        return user;
     }
 }

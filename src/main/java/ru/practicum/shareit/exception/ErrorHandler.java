@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-
 import java.util.Map;
 
 
@@ -29,12 +28,6 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleNotFound(final NotFoundException e) {
         return Map.of("error", "Объект не найден.");
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public Map<String, String> handleConflict(final ConflictException e) {
-        return Map.of("error", "Объект не может быть создан.");
     }
 
 }

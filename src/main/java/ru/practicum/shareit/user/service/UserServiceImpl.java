@@ -60,8 +60,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUserById(Long userId) {
+    public UserDto deleteUserById(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Такого пользователя не существует"));
         userRepository.deleteById(userId);
+        return userMapper.toUserDto(user);
     }
 
     private void validationUser(UserDto userDto) {

@@ -1,14 +1,10 @@
 package ru.practicum.shareit.item.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import org.hibernate.Hibernate;
+import lombok.*;
+import ru.practicum.shareit.request.model.Request;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
-import java.util.Objects;
 
 /**
  * TODO Sprint add-controllers.
@@ -17,6 +13,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "items", schema = "public")
 @Data
+@Builder
 @RequiredArgsConstructor
 @AllArgsConstructor
 public class Item {
@@ -37,16 +34,8 @@ public class Item {
     @Column(name = "available", nullable = false)
     private Boolean available;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Item item = (Item) o;
-        return id != null && Objects.equals(id, item.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
+    @ManyToOne
+    @JoinColumn(name = "request_id")
+    @ToString.Exclude
+    private Request request;
 }

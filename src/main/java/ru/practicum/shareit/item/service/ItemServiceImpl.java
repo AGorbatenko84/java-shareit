@@ -20,12 +20,16 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.model.Request;
+import ru.practicum.shareit.request.repository.RequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
@@ -42,6 +46,7 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
+    private final RequestRepository requestRepository;
 
     private final ItemMapper itemMapper;
     private final BookingMapper bookingMapper;
@@ -83,18 +88,22 @@ public class ItemServiceImpl implements ItemService {
                 itemDto.setComments(Collections.emptyList());
             }
         }
-
-
         return itemDtoList;
-
     }
-
 
     @Override
     public ItemDto addNewItem(Long userId, ItemDtoReqCreate itemDto) {
         User user = validateUserId(userId);
+        ;
         Item item = itemMapper.toItem(itemDto);
         item.setUser(user);
+        Long requestId = itemDto.getRequestId();
+        if (Objects.nonNull(requestId)) {
+            Request itemRequest = requestRepository.findById(requestId).orElseThrow(() -> {
+                throw new NotFoundException("Request with id " + requestId + " not found");
+            });
+            item.setRequest(itemRequest);
+        }
         itemRepository.save(item);
 
         ItemDto itemDtoResp = itemMapper.toItemDto(item);
@@ -108,6 +117,9 @@ public class ItemServiceImpl implements ItemService {
         Item item = itemRepository.findById(itemId).orElseThrow(() -> {
             throw new NotFoundException("Такого предмета не существует");
         });
+        if (!item.getUser().getId().equals(userId)) {
+            throw new ValidationException("Этот пользователь не может внести изменения.");
+        }
         if (itemDto.getName() == null) {
             itemDto.setName(item.getName());
         }
@@ -129,7 +141,7 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto getByIdAndUserId(Long userId, Long itemId) {
         validateUserId(userId);
         Item item = itemRepository.findById(itemId).orElseThrow(() -> {
-            throw new NotFoundException("Такого пользователя не существует");
+            throw new NotFoundException("Такой вещи не существует");
         });
         ItemDto itemDto = itemMapper.toItemDto(item);
         LocalDateTime timeNow = LocalDateTime.now();
@@ -151,13 +163,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemDto> searchItemsByText(Long userId, String text) {
         if (text == null || text.isBlank()) return Collections.emptyList();
-        List<ItemDto> listItems = itemRepository.findAll()
-                .stream()
-                .filter(item -> item.getDescription().toLowerCase().contains(text.toLowerCase()) ||
-                        item.getName().toLowerCase().contains(text.toLowerCase()))
-                .filter(item -> item.getAvailable().booleanValue())
-                .map(item -> itemMapper.toItemDto(item))
-                .collect(Collectors.toList());
+        List<ItemDto> listItems = itemMapper.toItemDtoList(itemRepository.search(text));
         return listItems;
     }
 
@@ -168,17 +174,18 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public CommentDto addNewComment(Long userId, CommentDto commentDto, Long itemId) {
-        validateUserId(userId);
-        List<Booking> listBooking = bookingRepository.findAll().stream()
-                .filter(booking -> booking.getBooker().getId().equals(userId) &&
-                        booking.getItem().getId().equals(itemId) &&
-                        booking.getEnd().isBefore(LocalDateTime.now()))
-                .collect(Collectors.toUnmodifiableList());
+        User user = validateUserId(userId);
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> {
+            throw new NotFoundException("Такой вещи не существует");
+        });
+        LocalDateTime timeNow = LocalDateTime.now();
+        List<Booking> listBooking = bookingRepository
+                .findByItem_IdAndBooker_IdAndStatusAndEndIsBefore(itemId, userId, StatusBooking.APPROVED, timeNow);
         if (!listBooking.isEmpty()) {
             Comment comment = commentMapper.toComment(commentDto);
-            comment.setItem(itemRepository.findById(itemId).get());
-            comment.setAuthor(userRepository.findById(userId).get());
-            comment.setCreated(LocalDateTime.now());
+            comment.setItem(item);
+            comment.setAuthor(user);
+            comment.setCreated(timeNow);
             commentRepository.save(comment);
             commentDto = commentMapper.toCommentDto(comment);
             //commentDto.setItemId(itemId);

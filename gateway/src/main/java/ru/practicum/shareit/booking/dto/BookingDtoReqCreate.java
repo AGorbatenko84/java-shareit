@@ -27,12 +27,12 @@ public class BookingDtoReqCreate {
     private Long itemId;
 
     @AssertTrue(message = "Конец аренды должен быть до начала")
-    public boolean isEndAfterStart(){
+    public boolean isEndAfterStart() {
         return start == null || end == null || end.isAfter(start);
     }
 
     @AssertTrue(message = "Конец аренды не может быть равен началу")
-    public boolean isEndEqualsStart(){
+    public boolean isEndEqualsStart() {
         return end == null || !end.equals(start);
     }
 }

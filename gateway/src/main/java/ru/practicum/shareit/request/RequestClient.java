@@ -13,7 +13,7 @@ import ru.practicum.shareit.request.dto.RequestDtoCreate;
 import java.util.Map;
 
 @Service
-public class RequestClient extends BaseClient{
+public class RequestClient extends BaseClient {
     private static final String API_PREFIX = "/requests";
 
     @Autowired

@@ -104,7 +104,7 @@ public class ItemServiceImpl implements ItemService {
             item.setRequest(itemRequest);
         }
         itemRepository.save(item);
-
+        log.info("Пользователь с id {} создал предмет с id {}", userId, item.getId());
         ItemDto itemDtoResp = itemMapper.toItemDto(item);
         return itemDtoResp;
     }
@@ -132,6 +132,7 @@ public class ItemServiceImpl implements ItemService {
         itemMapper.updateItem(itemDto, item);
         item.setUser(user);
         itemRepository.save(item);
+        log.info("Предмет с id {} обновлен", itemId);
         ItemDto itemDtoResp = itemMapper.toItemDto(item);
         return itemDtoResp;
     }
@@ -169,6 +170,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public void deleteItem(Long userId, Long itemId) {
         itemRepository.deleteById(itemId);
+        log.info("Пользователь с id {} удалил предмет с id {}", userId, itemId);
     }
 
     @Override
@@ -187,8 +189,11 @@ public class ItemServiceImpl implements ItemService {
             comment.setCreated(timeNow);
             commentRepository.save(comment);
             commentDto = commentMapper.toCommentDto(comment);
-        } else throw new ValidationException("Нет брони на эту вещь");
-
+            log.info("Пользователь с id {} добавил комментарий с id {} для предмета с id {}", userId, comment.getId(), itemId);
+        } else {
+            log.info("У Пользователя с id {} нет брони на предмет с id {}", userId, itemId);
+            throw new ValidationException("Нет брони на эту вещь");
+        }
         return commentDto;
     }
 

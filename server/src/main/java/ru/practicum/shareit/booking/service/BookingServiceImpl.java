@@ -49,6 +49,7 @@ public class BookingServiceImpl implements BookingService {
             booking.setBooker(userRepository.getById(userId));
         }
         bookingRepository.save(booking);
+        log.info("Пользователь с id {} создал бронь с id {}", userId, booking.getId());
         return bookingMapper.toBookingDto(booking);
     }
 
@@ -62,6 +63,7 @@ public class BookingServiceImpl implements BookingService {
         });
 
         if (!userId.equals(booking.getOwner().getId())) {
+            log.info("Пользователь с id {} не может изменить бронь с id {}", userId, bookingId);
             throw new NotFoundException("Не возможно изменить статус");
         }
         if (status.equalsIgnoreCase("true")) {
@@ -77,6 +79,7 @@ public class BookingServiceImpl implements BookingService {
             booking.setStatus(StatusBooking.REJECTED);
         }
         bookingRepository.save(booking);
+        log.info("Пользователь с id {} изменил статус брони с id {}", userId, bookingId);
         return bookingMapper.toBookingDto(booking);
     }
 

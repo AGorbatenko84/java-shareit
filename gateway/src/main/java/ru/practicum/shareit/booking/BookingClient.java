@@ -7,10 +7,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 import ru.practicum.shareit.booking.dto.BookingDtoReqCreate;
 import ru.practicum.shareit.client.BaseClient;
-
-import java.util.Map;
 
 @Service
 public class BookingClient extends BaseClient {
@@ -31,9 +31,11 @@ public class BookingClient extends BaseClient {
     }
 
     public ResponseEntity<Object> setApprove(long ownerId, long id, String approved) {
-        Map<String, Object> parameters = Map.of(
-                "approved", approved);
-        return patch("/" + id + "?approved={approved}", ownerId, parameters, null);
+        UriComponents builder = UriComponentsBuilder.newInstance()
+                .path("/" + id)
+                .query("approved={approved}")
+                .buildAndExpand(approved);
+        return patch(builder.toUriString(), ownerId, null);
     }
 
     public ResponseEntity<Object> getById(long userId, long id) {
@@ -41,20 +43,17 @@ public class BookingClient extends BaseClient {
     }
 
     public ResponseEntity<Object> getAllForUserByState(long userId, String state, Integer from, Integer size) {
-        Map<String, Object> parameters = Map.of(
-                "state", state,
-                "from", from,
-                "size", size
-        );
-        return get("?state={state}&from={from}&size={size}", userId, parameters);
+        UriComponents builder = UriComponentsBuilder.newInstance()
+                .query("state={state}&from={from}&size={size}")
+                .buildAndExpand(state, from, size);
+        return get(builder.toUriString(), userId);
     }
 
     public ResponseEntity<Object> getAllForOwnerByState(long userId, String state, Integer from, Integer size) {
-        Map<String, Object> parameters = Map.of(
-                "state", state,
-                "from", from,
-                "size", size
-        );
-        return get("/owner?state={state}&from={from}&size={size}", userId, parameters);
+        UriComponents builder = UriComponentsBuilder.newInstance()
+                .path("/owner")
+                .query("state={state}&from={from}&size={size}")
+                .buildAndExpand(state, from, size);
+        return get(builder.toUriString(), userId);
     }
 }

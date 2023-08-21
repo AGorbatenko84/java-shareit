@@ -35,7 +35,7 @@ public class RequestController {
     }
 
     @GetMapping
-    public ResponseEntity<Object>  getBookingsOwner(@RequestHeader("X-Sharer-User-Id") Long userId) {
+    public ResponseEntity<Object>  getBookingsOwnRequests(@RequestHeader("X-Sharer-User-Id") Long userId) {
         return requestClient.getOwn(userId);
     }
 

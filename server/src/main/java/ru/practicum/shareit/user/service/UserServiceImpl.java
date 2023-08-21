@@ -25,6 +25,7 @@ public class UserServiceImpl implements UserService {
         User user = userMapper.toUser(userDto);
         userRepository.save(user);
         userDto.setId(user.getId());
+        log.info("Пользователь с id {} создан", user.getId());
         return userDto;
     }
 
@@ -42,6 +43,7 @@ public class UserServiceImpl implements UserService {
         user.setId(userId);
         userDto.setId(userId);
         userRepository.save(user);
+        log.info("Пользователь с id {} обновлен", userId);
         return userDto;
     }
 
@@ -62,6 +64,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Такого пользователя не существует"));
         userRepository.deleteById(userId);
+        log.info("Пользователь с id {} удален", userId);
         return userMapper.toUserDto(user);
     }
 }
